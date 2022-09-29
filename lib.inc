@@ -3,7 +3,7 @@
 %define sys_read 0
 %define sys_print 1
 %define sys_exit 60
-
+  
 section .text
  
 
