@@ -3,11 +3,7 @@
 %define sys_read 0
 %define sys_print 1
 %define sys_exit 60
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> 105974df040df4d5fef9a5822833111bb9204c35
 section .text
  
 
@@ -19,7 +15,7 @@ exit:
 
 ; Принимает указатель на нуль-терминированную строку, возвращает её длину
 string_length:
-	xor rax, rax	; rax - string's length counter
+	xor rax, rax			; rax - string's length counter
 	.loop:
 		cmp byte[rdi+rax], 0	; сравниваем коды чисел и инкрементируем счетчик   
 		je .end			; пока не дойдем до 0 - терминатора
@@ -32,12 +28,7 @@ string_length:
 print_string:
 	push rdi
 	call string_length	; вычисляем длину строки
-<<<<<<< HEAD
 	pop rsi			; а затем выводим ее
-=======
-	pop rdi
-	mov rsi, rdi		; а затем выводим ее
->>>>>>> 105974df040df4d5fef9a5822833111bb9204c35
 	mov rdx, rax
 	mov rax, sys_print
 	mov rdi, stdout
@@ -59,12 +50,7 @@ print_char:
 ; Переводит строку (выводит символ с кодом 0xA)
 print_newline:
 	mov rdi, 0xA		; передаем символ перевода строки
-<<<<<<< HEAD
 	jmp print_char
-=======
-	call print_char		; в качестве аргумента предыдущей функции
-	ret
->>>>>>> 105974df040df4d5fef9a5822833111bb9204c35
 	
 
 ; Выводит беззнаковое 8-байтовое число в десятичном формате 
@@ -90,7 +76,6 @@ print_uint:
 	
 ; Выводит знаковое 8-байтовое число в десятичном формате 
 print_int:
-<<<<<<< HEAD
 	test rdi, rdi		; число положительное или отрицательное?
 	jns print_uint		; положительное - выводим сразу
 				; отрицательное - выводим знак "-"
@@ -100,21 +85,6 @@ print_int:
 		call print_char
 		pop rdi
 		jmp print_uint
-=======
-	mov rax, rdi
-	test rax, rax		; число положительное или отрицательное?
-	js .negative
-	call print_uint		; положительное - выводим сразу
-	ret
-	.negative:		; отрицательное - выводим знак "-"
-		neg rax		; переводим число из доп. кода в обычный 
-		push rax	; выводим число
-		mov rdi, 0x2D
-		call print_char
-		pop rdi
-		call print_uint
-		ret
->>>>>>> 105974df040df4d5fef9a5822833111bb9204c35
 ; Принимает два указателя на нуль-терминированные строки, возвращает 1 если они равны, 0 иначе
 string_equals:
 	xor rcx, rcx
@@ -157,7 +127,6 @@ read_char:
 
 read_word:
 	xor rcx, rcx ; счетчик числа букв в слове
-<<<<<<< HEAD
 	.loop:	
 		push rcx	; сохраняем значения важных регистров 
 		push rdi
@@ -166,14 +135,6 @@ read_word:
 		pop rsi
 		pop rdi
 		pop rcx		; возвращаем их значения
-=======
-	mov r8, rdi ; сохраняем адрес начала буффера
-	mov r9, rsi ; и размер буффера
-	.loop:	
-		push rcx	; сохраняем значение rcx ведь вызываемая функция содержит
-		call read_char	; syscall, который меняет значение этого регистра
-		pop rcx		; возвращаем его значение
->>>>>>> 105974df040df4d5fef9a5822833111bb9204c35
 		cmp rax, 0x20	; проверяем на пробельные символы
 		je .check_space
 		cmp rax, 0x9
@@ -182,15 +143,9 @@ read_word:
 		je .check_space
 		cmp rax, 0	; проверяем на 0 - терминатор
 		jz .end		; если да - передаем ответ, выходим из функции
-<<<<<<< HEAD
 		cmp rsi, rcx	; смотрим, есть ли место в буффере
 		je .buff_OF	; если нет - буффер переполнен
 		mov byte[rdi+rcx], al	;записываем символ(букву)
-=======
-		cmp r9, rcx	; смотрим, есть ли место в буффере
-		je .buff_OF	; если нет - буффер переполнен
-		mov byte[r8+rcx], al	;записываем символ(букву)
->>>>>>> 105974df040df4d5fef9a5822833111bb9204c35
 		inc rcx		; увеличиваем счетчик букв
 		jmp .loop
 	.buff_OF:
@@ -199,13 +154,8 @@ read_word:
 	.check_space:
 		cmp rcx, 0		; если пробельный символ перед словом - переходим на след.
 		je .loop		; иттерацию, иначе сохраняем выходные параметры и 
-<<<<<<< HEAD
 	.end:	mov byte[rdi+rcx], 0x0	; выходим из функции
 		mov rax, rdi
-=======
-	.end:	mov byte[r8+rcx], 0x0	; выходим из функции
-		mov rax, r8
->>>>>>> 105974df040df4d5fef9a5822833111bb9204c35
 		mov rdx, rcx
 		ret
 		
@@ -242,15 +192,8 @@ parse_uint:
 parse_int:
 	mov al, byte[rdi]	; проверяем, является ли первый символ знаком "-"
 	cmp al, "-"		; если нет - выводим положительное число (точно так же, как и parse_uint) 
-<<<<<<< HEAD
 	jne parse_uint		
 				; если первый знак - минус, то вызываем функцию parse_uint
-=======
-	je .negative		
-	call parse_uint
-	ret
-	.negative:		; если первый знак - минус, то вызываем функцию parse_uint
->>>>>>> 105974df040df4d5fef9a5822833111bb9204c35
 		inc rdi		; но после ее выполнения переводим rax в доп. код и 
 		call parse_uint	; увеличиваем число в rdx на 1 (ведь "-" тоже учитывается)
 		neg rax
